@@ -25,6 +25,7 @@
         android:background="#ffcc33">
 
         <Button
+            android:id="@+id/button_goto_wallet"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
