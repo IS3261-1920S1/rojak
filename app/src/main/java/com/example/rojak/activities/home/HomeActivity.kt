@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.widget.Button
 import com.example.rojak.R
 import com.example.rojak.activities.wallet.WalletActivity
-import com.example.rojak.database.DatabaseHelper
 
 class HomeActivity : AppCompatActivity() {
 
