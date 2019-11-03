@@ -9,6 +9,7 @@
     tools:context=".activities.wallet.WalletActivity">
 
     <TextView
+        android:id="@+id/currentWalletAmount"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -23,6 +24,7 @@
         android:layout_weight="3" />
 
     <Button
+        android:id="@+id/walletActivity_button_topup"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.4"
