@@ -17,8 +17,8 @@ class FoodDbHelper (context: Context) : SQLiteOpenHelper(context,
         private const val SQL_CREATE_ENTRIES =
             "CREATE TABLE ${FoodContract.FoodEntry.TABLE_NAME} (" +
                     "${FoodContract.FoodEntry.COLUMN_NAME_FOOD_ID} SERIAL PRIMARY KEY," +
-                    "${FoodContract.FoodEntry.COLUMN_NAME_CALORIES} TEXT," +
-                    "${FoodContract.FoodEntry.COLUMN_NAME_SUGAR} TEXT);"
+                    "${FoodContract.FoodEntry.COLUMN_NAME_BASE_AMOUNT} NUMERIC" +
+                    "${FoodContract.FoodEntry.COLUMN_NAME_HEALTHYNESS_RATING} NUMERIC);"
 
         private const val SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS" +
                 " ${FoodContract.FoodEntry.TABLE_NAME}"
