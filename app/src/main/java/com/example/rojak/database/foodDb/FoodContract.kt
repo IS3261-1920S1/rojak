@@ -1,4 +1,4 @@
-package com.example.rojak.database.FoodDatabase
+package com.example.rojak.database.foodDb
 
 import android.provider.BaseColumns
 
