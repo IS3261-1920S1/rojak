@@ -1,10 +1,10 @@
-package com.example.rojak.database.TopUpDatabase
+package com.example.rojak.database.foodTransactionDb
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-class TopUpDbHelper(context: Context) : SQLiteOpenHelper(context,
+class FoodTransactionDbHelper(context: Context) : SQLiteOpenHelper(context,
     DATABASE_NAME, null,
     DATABASE_VERSION
 ) {
@@ -12,16 +12,17 @@ class TopUpDbHelper(context: Context) : SQLiteOpenHelper(context,
     companion object {
         // If you change the database schema, you must increment the database version.
         const val DATABASE_VERSION = 1
-        const val DATABASE_NAME = "TopUp.db"
+        const val DATABASE_NAME = "FoodTransactionData.db"
 
         private const val SQL_CREATE_ENTRIES =
-            "CREATE TABLE ${TopUpContract.TopUpEntry.TABLE_NAME} (" +
-                    "${TopUpContract.TopUpEntry.COLUMN_NAME_TOPUP_ID} SERIAL PRIMARY KEY," +
-                    "${TopUpContract.TopUpEntry.COLUMN_NAME_TOPUP_AMOUNT} NUMERIC," +
-                    "${TopUpContract.TopUpEntry.COLUMN_NAME_TOPUP_TIMESTAMP} TIMESTAMP);"
+            "CREATE TABLE ${FoodTransactionContract.FoodTransactionEntry.TABLE_NAME} (" +
+                    "${FoodTransactionContract.FoodTransactionEntry.COLUMN_NAME_TRANSACTION_ID} SERIAL PRIMARY KEY," +
+                    "${FoodTransactionContract.FoodTransactionEntry.COLUMN_NAME_FOOD_ID} INTEGER FOREIGN KEYS REFERENCES Foods(id)," +
+                    "${FoodTransactionContract.FoodTransactionEntry.COLUMN_NAME_AMOUNT_PAID} NUMERIC" +
+                    "${FoodTransactionContract.FoodTransactionEntry.COLUMN_NAME_TRANSACTION_TIMESTAMP} TIMESTAMP);"
 
         private const val SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS" +
-                " ${TopUpContract.TopUpEntry.TABLE_NAME}"
+                " ${FoodTransactionContract.FoodTransactionEntry.TABLE_NAME}"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
