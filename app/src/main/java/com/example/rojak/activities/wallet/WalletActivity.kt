@@ -27,8 +27,7 @@ class WalletActivity : AppCompatActivity() {
         dataSource.add(Pair("Testing Amount", "Testing Description"))
         findViewById<ListView>(R.id.walletTransactions).adapter = WalletTransactionAdapter(this, dataSource)
         findViewById<Button>(R.id.walletActivity_button_topup).setOnClickListener {
-            val a = TopUpDialog()
-            a.show(supportFragmentManager, "")
+            TopUpDialog().show(supportFragmentManager, "")
         }
 
     }

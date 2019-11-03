@@ -1,5 +1,6 @@
 package com.example.rojak.database
 
+import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
@@ -10,7 +11,7 @@ class DatabaseHelper (context: Context) : SQLiteOpenHelper(context,
     DATABASE_VERSION
 ) {
 
-    private val db: SQLiteDatabase = readableDatabase
+    private val db: SQLiteDatabase = writableDatabase
 
     companion object {
         // If you change the database schema, you must increment the database version.
@@ -59,7 +60,7 @@ class DatabaseHelper (context: Context) : SQLiteOpenHelper(context,
                     "${DatabaseContracts.FoodTransactionEntry.COLUMN_NAME_TRANSACTION_ID} INTEGER PRIMARY KEY," +
                     "${DatabaseContracts.FoodTransactionEntry.COLUMN_NAME_FOOD_ID} INTEGER," +
                     "${DatabaseContracts.FoodTransactionEntry.COLUMN_NAME_AMOUNT_PAID} NUMERIC," +
-                    "${DatabaseContracts.FoodTransactionEntry.COLUMN_NAME_TRANSACTION_TIMESTAMP} TIMESTAMP, " +
+                    "${DatabaseContracts.FoodTransactionEntry.COLUMN_NAME_TRANSACTION_TIMESTAMP} TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
                     "FOREIGN KEY (${DatabaseContracts.FoodTransactionEntry.COLUMN_NAME_TRANSACTION_ID}) REFERENCES " +
                     "${DatabaseContracts.WalletTransactionEntry.TABLE_NAME} (${DatabaseContracts.WalletTransactionEntry.COLUMN_NAME_TRANSACTION_ID})," +
                     "FOREIGN KEY (${DatabaseContracts.FoodTransactionEntry.COLUMN_NAME_FOOD_ID}) REFERENCES ${DatabaseContracts.FoodEntry.TABLE_NAME} (${DatabaseContracts.FoodEntry.COLUMN_NAME_FOOD_ID}));"
@@ -74,7 +75,7 @@ class DatabaseHelper (context: Context) : SQLiteOpenHelper(context,
             "CREATE TABLE ${DatabaseContracts.TopUpTransactionEntry.TABLE_NAME} (" +
                     "${DatabaseContracts.TopUpTransactionEntry.COLUMN_NAME_TRANSACTION_ID} INTEGER PRIMARY KEY," +
                     "${DatabaseContracts.TopUpTransactionEntry.COLUMN_NAME_TOPUP_AMOUNT} NUMERIC," +
-                    "${DatabaseContracts.TopUpTransactionEntry.COLUMN_NAME_TOPUP_TIMESTAMP} TIMESTAMP, " +
+                    "${DatabaseContracts.TopUpTransactionEntry.COLUMN_NAME_TOPUP_TIMESTAMP} TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
                     "CONSTRAINT TT_WT_LINK " +
                     "FOREIGN KEY (${DatabaseContracts.TopUpTransactionEntry.COLUMN_NAME_TRANSACTION_ID}) REFERENCES " +
                     "${DatabaseContracts.WalletTransactionEntry.TABLE_NAME} (${DatabaseContracts.WalletTransactionEntry.COLUMN_NAME_TRANSACTION_ID}));"
@@ -114,12 +115,24 @@ class DatabaseHelper (context: Context) : SQLiteOpenHelper(context,
 
     fun getCurrentWalletAmount() : Float {
         val cursor = this.db.rawQuery(GET_ALL_WALLET_ENTRIES, null)
-        if (cursor.moveToFirst()) {
+        if (cursor.moveToLast()) {
             val currentWalletAmountString = cursor.getFloat(cursor.getColumnIndex(DatabaseContracts.WalletTransactionEntry.COLUMN_NAME_CURRENT_WALLET_AMOUNT))
             Log.i("CursorTest", currentWalletAmountString.toString())
             return currentWalletAmountString
         }
         cursor.close()
         return -1.0f
+    }
+
+    fun topUpWallet(topUpAmount : Float) {
+        val newWalletAmount = this.getCurrentWalletAmount() + topUpAmount
+        val values = ContentValues()
+        values.put(DatabaseContracts.WalletTransactionEntry.COLUMN_NAME_CURRENT_WALLET_AMOUNT, newWalletAmount)
+        val newId = db.insert(DatabaseContracts.WalletTransactionEntry.TABLE_NAME, null, values)
+
+        val topUpValues = ContentValues()
+        topUpValues.put(DatabaseContracts.TopUpTransactionEntry.COLUMN_NAME_TRANSACTION_ID, newId)
+        topUpValues.put(DatabaseContracts.TopUpTransactionEntry.COLUMN_NAME_TOPUP_AMOUNT, topUpAmount)
+        db.insert(DatabaseContracts.TopUpTransactionEntry.TABLE_NAME, null, topUpValues)
     }
 }
