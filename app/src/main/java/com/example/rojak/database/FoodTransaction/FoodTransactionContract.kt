@@ -11,5 +11,4 @@ object FoodTransactionContract {
         const val COLUMN_NAME_AMOUNT_PAID = "amount"
         const val COLUMN_NAME_TRANSACTION_TIMESTAMP = "timestamp"
     }
-
 }
