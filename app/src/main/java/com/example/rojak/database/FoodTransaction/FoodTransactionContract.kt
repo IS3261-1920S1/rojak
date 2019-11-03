@@ -8,8 +8,8 @@ object FoodTransactionContract {
         const val TABLE_NAME = "FoodTransactions"
         const val COLUMN_NAME_TRANSACTION_ID = "id"
         const val COLUMN_NAME_FOOD_ID = "food_id"
-        const val COLUMN_NAME_AMOUNT = "amount"
+        const val COLUMN_NAME_AMOUNT_PAID = "amount"
+        const val COLUMN_NAME_TRANSACTION_TIMESTAMP = "timestamp"
     }
-
 
 }

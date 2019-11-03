@@ -18,7 +18,8 @@ class FoodTransactionDbHelper(context: Context) : SQLiteOpenHelper(context,
             "CREATE TABLE ${FoodTransactionContract.FoodTransactionEntry.TABLE_NAME} (" +
                     "${FoodTransactionContract.FoodTransactionEntry.COLUMN_NAME_TRANSACTION_ID} SERIAL PRIMARY KEY," +
                     "${FoodTransactionContract.FoodTransactionEntry.COLUMN_NAME_FOOD_ID} INTEGER FOREIGN KEYS REFERENCES Foods(id)," +
-                    "${FoodTransactionContract.FoodTransactionEntry.COLUMN_NAME_AMOUNT} NUMERIC);"
+                    "${FoodTransactionContract.FoodTransactionEntry.COLUMN_NAME_AMOUNT_PAID} NUMERIC" +
+                    "${FoodTransactionContract.FoodTransactionEntry.COLUMN_NAME_TRANSACTION_TIMESTAMP} TIMESTAMP);"
 
         private const val SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS" +
                 " ${FoodTransactionContract.FoodTransactionEntry.TABLE_NAME}"
