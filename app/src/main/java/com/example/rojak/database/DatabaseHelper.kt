@@ -4,18 +4,18 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.util.Log
+import com.example.rojak.models.FoodTransaction
+import com.example.rojak.models.TopUpTransaction
+import com.example.rojak.models.Transaction
 
 class DatabaseHelper (context: Context) : SQLiteOpenHelper(context,
     DATABASE_NAME, null,
     DATABASE_VERSION
 ) {
 
-    private val db: SQLiteDatabase = writableDatabase
-
     companion object {
         // If you change the database schema, you must increment the database version.
-        const val DATABASE_VERSION = 1
+        const val DATABASE_VERSION = 8
         const val DATABASE_NAME = "Rojak.db"
 
         /**
@@ -23,12 +23,32 @@ class DatabaseHelper (context: Context) : SQLiteOpenHelper(context,
          */
         private const val CREATE_FOODS_TABLE =
             "CREATE TABLE ${DatabaseContracts.FoodEntry.TABLE_NAME} (" +
-                    "${DatabaseContracts.FoodEntry.COLUMN_NAME_FOOD_ID} SERIAL PRIMARY KEY," +
-                    "${DatabaseContracts.FoodEntry.COLUMN_NAME_BASE_AMOUNT} NUMERIC" +
+                    "${DatabaseContracts.FoodEntry.COLUMN_NAME_FOOD_NAME} TEXT," +
+                    "${DatabaseContracts.FoodEntry.COLUMN_NAME_BASE_AMOUNT} NUMERIC," +
                     "${DatabaseContracts.FoodEntry.COLUMN_NAME_HEALTHYNESS_RATING} NUMERIC);"
 
         private const val DELETE_FOODS_TABLE = "DROP TABLE IF EXISTS" +
                 " ${DatabaseContracts.FoodEntry.TABLE_NAME};"
+
+        private val FOOD_POPULATION_QUERIES : Array<String> = arrayOf(
+            "INSERT INTO ${DatabaseContracts.FoodEntry.TABLE_NAME} " +
+                "(${DatabaseContracts.FoodEntry.COLUMN_NAME_FOOD_NAME}, ${DatabaseContracts.FoodEntry.COLUMN_NAME_BASE_AMOUNT}," +
+                "${DatabaseContracts.FoodEntry.COLUMN_NAME_HEALTHYNESS_RATING}) VALUES ('Laksa', 4.50, 0.67);",
+
+            "INSERT INTO ${DatabaseContracts.FoodEntry.TABLE_NAME} " +
+                    "(${DatabaseContracts.FoodEntry.COLUMN_NAME_FOOD_NAME}, ${DatabaseContracts.FoodEntry.COLUMN_NAME_BASE_AMOUNT}," +
+                    "${DatabaseContracts.FoodEntry.COLUMN_NAME_HEALTHYNESS_RATING}) VALUES ('Chicken Rice', 3.50, 0.53);",
+
+            "INSERT INTO ${DatabaseContracts.FoodEntry.TABLE_NAME} " +
+                    "(${DatabaseContracts.FoodEntry.COLUMN_NAME_FOOD_NAME}, ${DatabaseContracts.FoodEntry.COLUMN_NAME_BASE_AMOUNT}," +
+                    "${DatabaseContracts.FoodEntry.COLUMN_NAME_HEALTHYNESS_RATING}) VALUES ('Chicken Burger', 4.00, 0.46);",
+
+            "INSERT INTO ${DatabaseContracts.FoodEntry.TABLE_NAME} " +
+                    "(${DatabaseContracts.FoodEntry.COLUMN_NAME_FOOD_NAME}, ${DatabaseContracts.FoodEntry.COLUMN_NAME_BASE_AMOUNT}," +
+                    "${DatabaseContracts.FoodEntry.COLUMN_NAME_HEALTHYNESS_RATING}) VALUES ('Salmon Pasta', 6.50, 0.49);"
+        )
+
+
 
         /**
          * WalletTransaction Table Default Queries
@@ -38,17 +58,17 @@ class DatabaseHelper (context: Context) : SQLiteOpenHelper(context,
 
         private const val CREATE_WALLET_TRANSACTION_TABLE =
             "CREATE TABLE ${DatabaseContracts.WalletTransactionEntry.TABLE_NAME} (" +
-                "${DatabaseContracts.WalletTransactionEntry.COLUMN_NAME_TRANSACTION_ID} SERIAL PRIMARY KEY," +
-                "${DatabaseContracts.WalletTransactionEntry.COLUMN_NAME_CURRENT_WALLET_AMOUNT} NUMERIC);"
+                "${DatabaseContracts.WalletTransactionEntry.COLUMN_NAME_CURRENT_WALLET_AMOUNT} NUMERIC," +
+                "${DatabaseContracts.WalletTransactionEntry.COLUMN_NAME_TRANSACTION_TIMESTAMP} TIMESTAMP DEFAULT CURRENT_TIMESTAMP);"
 
         private const val DELETE_WALLET_TRANSACTION_TABLE = "DROP TABLE IF EXISTS" +
                 " ${DatabaseContracts.WalletTransactionEntry.TABLE_NAME};"
 
         private const val INITIALIZE_WALLET = "INSERT INTO ${DatabaseContracts.WalletTransactionEntry.TABLE_NAME} " +
                 "(${DatabaseContracts.WalletTransactionEntry.COLUMN_NAME_CURRENT_WALLET_AMOUNT}) VALUES" +
-                "(0.0);"
+                "(${INITIAL_WALLET_VALUE});"
 
-        private const val GET_ALL_WALLET_ENTRIES = "SELECT ${DatabaseContracts.WalletTransactionEntry.COLUMN_NAME_CURRENT_WALLET_AMOUNT} " +
+        private const val GET_ALL_WALLET_ENTRIES = "SELECT * " +
                 "FROM ${DatabaseContracts.WalletTransactionEntry.TABLE_NAME};"
 
 
@@ -59,14 +79,18 @@ class DatabaseHelper (context: Context) : SQLiteOpenHelper(context,
             "CREATE TABLE ${DatabaseContracts.FoodTransactionEntry.TABLE_NAME} (" +
                     "${DatabaseContracts.FoodTransactionEntry.COLUMN_NAME_TRANSACTION_ID} INTEGER PRIMARY KEY," +
                     "${DatabaseContracts.FoodTransactionEntry.COLUMN_NAME_FOOD_ID} INTEGER," +
-                    "${DatabaseContracts.FoodTransactionEntry.COLUMN_NAME_AMOUNT_PAID} NUMERIC," +
-                    "${DatabaseContracts.FoodTransactionEntry.COLUMN_NAME_TRANSACTION_TIMESTAMP} TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                    "${DatabaseContracts.FoodTransactionEntry.COLUMN_NAME_AMOUNT_PAID} NUMERIC, " +
                     "FOREIGN KEY (${DatabaseContracts.FoodTransactionEntry.COLUMN_NAME_TRANSACTION_ID}) REFERENCES " +
-                    "${DatabaseContracts.WalletTransactionEntry.TABLE_NAME} (${DatabaseContracts.WalletTransactionEntry.COLUMN_NAME_TRANSACTION_ID})," +
-                    "FOREIGN KEY (${DatabaseContracts.FoodTransactionEntry.COLUMN_NAME_FOOD_ID}) REFERENCES ${DatabaseContracts.FoodEntry.TABLE_NAME} (${DatabaseContracts.FoodEntry.COLUMN_NAME_FOOD_ID}));"
+                    "${DatabaseContracts.WalletTransactionEntry.TABLE_NAME} (${DatabaseContracts.ROWID})," +
+                    "FOREIGN KEY (${DatabaseContracts.FoodTransactionEntry.COLUMN_NAME_FOOD_ID}) REFERENCES ${DatabaseContracts.FoodEntry.TABLE_NAME} (${DatabaseContracts.ROWID}));"
 
         private const val DELETE_FOOD_TRANSACTION_TABLE = "DROP TABLE IF EXISTS" +
                 " ${DatabaseContracts.FoodTransactionEntry.TABLE_NAME};"
+
+        private const val GET_ALL_FOOD_TRANSACTION_MODEL = "SELECT * FROM ${DatabaseContracts.FoodTransactionEntry.TABLE_NAME} INNER JOIN ${DatabaseContracts.WalletTransactionEntry.TABLE_NAME} " +
+                "ON ${DatabaseContracts.FoodTransactionEntry.TABLE_NAME}.${DatabaseContracts.FoodTransactionEntry.COLUMN_NAME_TRANSACTION_ID} = ${DatabaseContracts.WalletTransactionEntry.TABLE_NAME}.${DatabaseContracts.ROWID} " +
+                "INNER JOIN ${DatabaseContracts.FoodEntry.TABLE_NAME} " +
+                "ON ${DatabaseContracts.FoodTransactionEntry.TABLE_NAME}.${DatabaseContracts.FoodTransactionEntry.COLUMN_NAME_FOOD_ID} = ${DatabaseContracts.FoodEntry.TABLE_NAME}.${DatabaseContracts.ROWID};"
 
         /**
          * TopUpTransaction Table Default Queries
@@ -74,18 +98,21 @@ class DatabaseHelper (context: Context) : SQLiteOpenHelper(context,
         private const val CREATE_TOPUP_TRANSACTION_TABLE =
             "CREATE TABLE ${DatabaseContracts.TopUpTransactionEntry.TABLE_NAME} (" +
                     "${DatabaseContracts.TopUpTransactionEntry.COLUMN_NAME_TRANSACTION_ID} INTEGER PRIMARY KEY," +
-                    "${DatabaseContracts.TopUpTransactionEntry.COLUMN_NAME_TOPUP_AMOUNT} NUMERIC," +
-                    "${DatabaseContracts.TopUpTransactionEntry.COLUMN_NAME_TOPUP_TIMESTAMP} TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                    "${DatabaseContracts.TopUpTransactionEntry.COLUMN_NAME_TOPUP_AMOUNT} NUMERIC, " +
                     "CONSTRAINT TT_WT_LINK " +
                     "FOREIGN KEY (${DatabaseContracts.TopUpTransactionEntry.COLUMN_NAME_TRANSACTION_ID}) REFERENCES " +
-                    "${DatabaseContracts.WalletTransactionEntry.TABLE_NAME} (${DatabaseContracts.WalletTransactionEntry.COLUMN_NAME_TRANSACTION_ID}));"
+                    "${DatabaseContracts.WalletTransactionEntry.TABLE_NAME} (${DatabaseContracts.ROWID}));"
 
         private const val DELETE_TOPUP_TRANSACTION_TABLE = "DROP TABLE IF EXISTS" +
                 " ${DatabaseContracts.TopUpTransactionEntry.TABLE_NAME};"
+
+        private const val GET_ALL_TOPUP_TRANSACTION_MODEL = "SELECT * FROM ${DatabaseContracts.TopUpTransactionEntry.TABLE_NAME} INNER JOIN ${DatabaseContracts.WalletTransactionEntry.TABLE_NAME} ON " +
+                "${DatabaseContracts.TopUpTransactionEntry.TABLE_NAME}.${DatabaseContracts.TopUpTransactionEntry.COLUMN_NAME_TRANSACTION_ID} = ${DatabaseContracts.WalletTransactionEntry.TABLE_NAME}.${DatabaseContracts.ROWID};"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL(CREATE_FOODS_TABLE)
+        this.populateFoodEntries(db)
         db.execSQL(CREATE_WALLET_TRANSACTION_TABLE)
         db.execSQL(INITIALIZE_WALLET)
         db.execSQL(CREATE_TOPUP_TRANSACTION_TABLE)
@@ -104,6 +131,18 @@ class DatabaseHelper (context: Context) : SQLiteOpenHelper(context,
         onUpgrade(db, oldVersion, newVersion)
     }
 
+    private fun populateFoodEntries(db: SQLiteDatabase) {
+        db.beginTransaction()
+        try {
+            for (query in FOOD_POPULATION_QUERIES) {
+                db.execSQL(query)
+            }
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
+        }
+    }
+
 
     /**
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -114,10 +153,9 @@ class DatabaseHelper (context: Context) : SQLiteOpenHelper(context,
      */
 
     fun getCurrentWalletAmount() : Float {
-        val cursor = this.db.rawQuery(GET_ALL_WALLET_ENTRIES, null)
+        val cursor = this.readableDatabase.rawQuery(GET_ALL_WALLET_ENTRIES, null)
         if (cursor.moveToLast()) {
             val currentWalletAmountString = cursor.getFloat(cursor.getColumnIndex(DatabaseContracts.WalletTransactionEntry.COLUMN_NAME_CURRENT_WALLET_AMOUNT))
-            Log.i("CursorTest", currentWalletAmountString.toString())
             return currentWalletAmountString
         }
         cursor.close()
@@ -125,6 +163,8 @@ class DatabaseHelper (context: Context) : SQLiteOpenHelper(context,
     }
 
     fun topUpWallet(topUpAmount : Float) {
+        val db = writableDatabase
+
         val newWalletAmount = this.getCurrentWalletAmount() + topUpAmount
         val values = ContentValues()
         values.put(DatabaseContracts.WalletTransactionEntry.COLUMN_NAME_CURRENT_WALLET_AMOUNT, newWalletAmount)
@@ -134,5 +174,41 @@ class DatabaseHelper (context: Context) : SQLiteOpenHelper(context,
         topUpValues.put(DatabaseContracts.TopUpTransactionEntry.COLUMN_NAME_TRANSACTION_ID, newId)
         topUpValues.put(DatabaseContracts.TopUpTransactionEntry.COLUMN_NAME_TOPUP_AMOUNT, topUpAmount)
         db.insert(DatabaseContracts.TopUpTransactionEntry.TABLE_NAME, null, topUpValues)
+    }
+
+    fun getAllWalletTransactions() : ArrayList<Transaction> {
+        val db = readableDatabase
+        val transactions = ArrayList<Transaction>()
+
+        val cursorFoodTransactionModel = db.rawQuery(GET_ALL_FOOD_TRANSACTION_MODEL, null)
+        cursorFoodTransactionModel.use {
+            while (it.moveToNext()) {
+                transactions.add(
+                    FoodTransaction(
+                        it.getInt(it.getColumnIndex(DatabaseContracts.ROWID)),
+                        it.getFloat(it.getColumnIndex(DatabaseContracts.WalletTransactionEntry.COLUMN_NAME_CURRENT_WALLET_AMOUNT)),
+                        it.getString(it.getColumnIndex(DatabaseContracts.WalletTransactionEntry.COLUMN_NAME_TRANSACTION_TIMESTAMP)),
+                        it.getString(it.getColumnIndex(DatabaseContracts.FoodEntry.COLUMN_NAME_FOOD_NAME)),
+                        it.getFloat(it.getColumnIndex(DatabaseContracts.FoodTransactionEntry.COLUMN_NAME_AMOUNT_PAID))
+                    )
+                )
+            }
+        }
+
+        val cursorTopUpTransactionModel =  db.rawQuery(GET_ALL_TOPUP_TRANSACTION_MODEL, null)
+        cursorTopUpTransactionModel.use {
+            while (it.moveToNext()) {
+                transactions.add(
+                    TopUpTransaction(
+                        it.getInt(it.getColumnIndex(DatabaseContracts.TopUpTransactionEntry.COLUMN_NAME_TRANSACTION_ID)),
+                        it.getFloat(it.getColumnIndex(DatabaseContracts.WalletTransactionEntry.COLUMN_NAME_CURRENT_WALLET_AMOUNT)),
+                        it.getString(it.getColumnIndex(DatabaseContracts.WalletTransactionEntry.COLUMN_NAME_TRANSACTION_TIMESTAMP)),
+                        it.getFloat(it.getColumnIndex(DatabaseContracts.TopUpTransactionEntry.COLUMN_NAME_TOPUP_AMOUNT))
+                    )
+                )
+            }
+        }
+
+        return transactions
     }
 }
