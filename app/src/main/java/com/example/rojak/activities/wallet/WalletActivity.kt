@@ -16,8 +16,11 @@ class WalletActivity : AppCompatActivity() {
 
         val dbHelper : DatabaseHelper = DatabaseHelper(this)
         findViewById<TextView>(R.id.currentWalletAmount).text = dbHelper.getCurrentWalletAmount().toString()
-
         val dataSource = ArrayList<Pair<String, String>>()
+        dbHelper.getAllWalletTransactions().forEach {
+            dataSource.add(Pair(it.getHistoryTitle(), it.getHistoryDescription()))
+        }
+
         dataSource.add(Pair("Testing Amount", "Testing Description"))
         dataSource.add(Pair("Testing Amount", "Testing Description"))
         dataSource.add(Pair("Testing Amount", "Testing Description"))
