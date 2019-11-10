@@ -15,7 +15,7 @@ class DatabaseHelper (context: Context) : SQLiteOpenHelper(context,
 
     companion object {
         // If you change the database schema, you must increment the database version.
-        const val DATABASE_VERSION = 8
+        const val DATABASE_VERSION = 13
         const val DATABASE_NAME = "Rojak.db"
 
         /**
@@ -47,6 +47,9 @@ class DatabaseHelper (context: Context) : SQLiteOpenHelper(context,
                     "(${DatabaseContracts.FoodEntry.COLUMN_NAME_FOOD_NAME}, ${DatabaseContracts.FoodEntry.COLUMN_NAME_BASE_AMOUNT}," +
                     "${DatabaseContracts.FoodEntry.COLUMN_NAME_HEALTHYNESS_RATING}) VALUES ('Salmon Pasta', 6.50, 0.49);"
         )
+
+
+
 
 
 
@@ -142,6 +145,63 @@ class DatabaseHelper (context: Context) : SQLiteOpenHelper(context,
             db.endTransaction()
         }
     }
+    /**
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     * **********************************
+     * QR TRANSACTION TABLE FUNCTIONS
+     * **********************************
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     */
+
+    fun queryFood(foodID: String) : Triple<String, String, String>{
+        var foodName =""
+        var foodid = ""
+        var foodprice = ""
+        val query = "SELECT * " +
+                "FROM ${DatabaseContracts.FoodEntry.TABLE_NAME} WHERE rowid=1;"
+             //   "FROM ${DatabaseContracts.FoodEntry.TABLE_NAME} WHERE rowid=" + foodID + ";"
+        val cursor = this.readableDatabase.rawQuery(query, null)
+        if (cursor.moveToLast()) {
+            println(cursor)
+            val name = cursor.getString(cursor.getColumnIndex(DatabaseContracts.FoodEntry.COLUMN_NAME_FOOD_NAME))
+            val id = cursor.getLong(0)
+            val price = cursor.getString(cursor.getColumnIndex(DatabaseContracts.FoodEntry.COLUMN_NAME_BASE_AMOUNT))
+
+            foodName = name
+            foodid = id.toString()
+            foodprice = price
+        }else{
+            foodName =  "unknown"
+        }
+        cursor.close()
+        return Triple(foodName, foodid, foodprice)
+    }
+
+    /**
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     * **********************************
+     * FOOD TRANSACTION TABLE FUNCTIONS
+     * **********************************
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     */
+
+    fun addPurchase(price: Float, foodID: Int) {
+        val db = writableDatabase
+
+        val newWalletAmount = this.getCurrentWalletAmount() - price
+        val values = ContentValues()
+        values.put(DatabaseContracts.WalletTransactionEntry.COLUMN_NAME_CURRENT_WALLET_AMOUNT, newWalletAmount)
+        val newId = db.insert(DatabaseContracts.WalletTransactionEntry.TABLE_NAME, null, values)
+
+        val topUpValues = ContentValues()
+        topUpValues.put(DatabaseContracts.FoodTransactionEntry.COLUMN_NAME_TRANSACTION_ID, newId)
+        topUpValues.put(DatabaseContracts.FoodTransactionEntry.COLUMN_NAME_FOOD_ID, foodID)
+        topUpValues.put(DatabaseContracts.FoodTransactionEntry.COLUMN_NAME_AMOUNT_PAID, price)
+        db.insert(DatabaseContracts.FoodTransactionEntry.TABLE_NAME, null, topUpValues)
+    }
+
+
+
 
 
     /**
@@ -151,6 +211,9 @@ class DatabaseHelper (context: Context) : SQLiteOpenHelper(context,
      * **********************************
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      */
+
+
+
 
     fun getCurrentWalletAmount() : Float {
         val cursor = this.readableDatabase.rawQuery(GET_ALL_WALLET_ENTRIES, null)
