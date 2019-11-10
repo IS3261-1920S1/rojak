@@ -7,11 +7,15 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
+import android.widget.SeekBar
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import com.example.rojak.R
 import com.example.rojak.activities.wallet.WalletActivity
 import com.example.rojak.activities.qr.QRActivity
+import com.example.rojak.database.DatabaseHelper
 //import android.support.v7.app.AlertDialog;
 
 class HomeActivity : AppCompatActivity() {
@@ -44,6 +48,23 @@ class HomeActivity : AppCompatActivity() {
             val walletIntent: Intent = Intent(this, QRActivity::class.java)
             startActivity(walletIntent)
         }
+
+        val rating = DatabaseHelper(this).getAvgWeeklyRating()
+        val seeker = findViewById<SeekBar>(R.id.seekBar)
+        seeker.isEnabled = false
+        seeker.progress = (rating * 100).toInt()
+        var suggest = ""
+        if(rating > 0.70){
+            suggest = "eat more healthy food!"
+        }else if(rating > 0.4){
+            suggest = "watch out for junk food"
+        }else{
+            suggest = "Keep up the healthy eating :)"
+        }
+
+        val suggestText = findViewById<TextView>(R.id.suggest)
+        suggestText.text = suggest
+
 
     }
 
