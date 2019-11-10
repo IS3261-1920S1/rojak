@@ -20,6 +20,7 @@ import com.example.rojak.database.DatabaseHelper
 
 class HomeActivity : AppCompatActivity() {
     var allPermissionsGrantedFlag : Int = 0
+    var hasLaunchedAnotherActivity : Int = 0
 
     private val permissionList = arrayOf(
         Manifest.permission.CAMERA,
@@ -41,11 +42,13 @@ class HomeActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.button_goto_wallet).setOnClickListener {
             val walletIntent: Intent = Intent(this, WalletActivity::class.java)
+            hasLaunchedAnotherActivity = 1
             startActivity(walletIntent)
         }
 
         findViewById<Button>(R.id.button_goto_qr).setOnClickListener {
             val walletIntent: Intent = Intent(this, QRActivity::class.java)
+            hasLaunchedAnotherActivity = 1
             startActivity(walletIntent)
         }
 
@@ -71,6 +74,15 @@ class HomeActivity : AppCompatActivity() {
         suggestText.text = suggest
 
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (hasLaunchedAnotherActivity != 0) {
+            val i = getIntent()
+            finish()
+            startActivity(i)
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)

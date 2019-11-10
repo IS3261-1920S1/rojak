@@ -96,7 +96,7 @@ class QRActivity : AppCompatActivity() {
                     val rounded_price = df.format(new_price)
 
 
-                    val output = "Food Item: " + name  + "Price: " + rounded_price
+                    val output = "Food Item: " + name + "\n" + "Price: " + rounded_price
                     tvCodeInfo.text = output
                //     barcodeDetector.release()
 
@@ -110,15 +110,12 @@ class QRActivity : AppCompatActivity() {
 
                             val myToast = Toast.makeText(applicationContext,"Purchase Success",Toast.LENGTH_SHORT)
                             myToast.show()
+                            finish()
                         }
                     }
 
                     findViewById<Button>(R.id.cancelPurchase).setOnClickListener {
-                        val i: Intent = Intent(this@QRActivity, QRActivity::class.java)
                         finish()
-                        overridePendingTransition(0, 0)
-                        startActivity(i)
-                        overridePendingTransition(0, 0)
                     }
 
 
