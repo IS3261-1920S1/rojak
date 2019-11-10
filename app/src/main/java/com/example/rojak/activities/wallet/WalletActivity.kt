@@ -7,6 +7,7 @@ import android.widget.ListView
 import android.widget.TextView
 import com.example.rojak.R
 import com.example.rojak.database.DatabaseHelper
+import java.text.SimpleDateFormat
 
 class WalletActivity : AppCompatActivity() {
 
@@ -17,7 +18,11 @@ class WalletActivity : AppCompatActivity() {
         val dbHelper : DatabaseHelper = DatabaseHelper(this)
         findViewById<TextView>(R.id.currentWalletAmount).text = dbHelper.getCurrentWalletAmount().toString()
         val dataSource = ArrayList<Pair<String, String>>()
-        dbHelper.getAllWalletTransactions().forEach {
+        val transactions = dbHelper.getAllWalletTransactions()
+        val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+
+        val sortedTransactions = transactions.sortedWith(compareByDescending { formatter.parse(it.timestamp) })
+        sortedTransactions.forEach {
             dataSource.add(Pair(it.getHistoryTitle(), it.getHistoryDescription()))
         }
 

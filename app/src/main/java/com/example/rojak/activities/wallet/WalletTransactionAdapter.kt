@@ -21,10 +21,9 @@ class WalletTransactionAdapter(private val context : Context,
         val transactionAmountText = rowView.findViewById<TextView>(R.id.walletTransaction_transactionAmount)
         transactionAmountText.text = rowItem.first
         if (rowItem.first[0] == '-') {
-            transactionAmountText.setTextColor(Color.parseColor("#0acd5b"))
-
-        } else {
             transactionAmountText.setTextColor(Color.parseColor("#cd200a"))
+        } else {
+            transactionAmountText.setTextColor(Color.parseColor("#0acd5b"))
         }
         rowView.findViewById<TextView>(R.id.walletTransaction_transactionDesc).text = rowItem.second
 
