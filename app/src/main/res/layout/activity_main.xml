@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="    Rojak! _"
-        android:fontFamily="@font/madame_font"
+        android:fontFamily="@font/font_madame"
         android:textSize="117sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
