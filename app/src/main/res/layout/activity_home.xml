@@ -73,14 +73,13 @@
                     android:layout_height="match_parent"
                     android:text="Very Healthy"
                     android:layout_marginLeft="4dp"
-                    android:gravity="bottom"
+                    android:gravity="bottom|start"
                     android:layout_weight="1"/>
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:textAlignment="textEnd"
-                    android:gravity="bottom"
+                    android:gravity="bottom|end"
                     android:layout_marginRight="4dp"
                     android:text="Very Un-Healthy"
                     android:layout_weight="1"/>
