@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper
 import com.example.rojak.models.FoodTransaction
 import com.example.rojak.models.TopUpTransaction
 import com.example.rojak.models.Transaction
+import org.json.JSONObject
 
 class DatabaseHelper (context: Context) : SQLiteOpenHelper(context,
     DATABASE_NAME, null,
@@ -153,10 +154,11 @@ class DatabaseHelper (context: Context) : SQLiteOpenHelper(context,
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      */
 
-    fun queryFood(foodID: String) : Triple<String, String, String>{
-        var foodName =""
+    fun queryFood(foodID: String) : JSONObject{
+        var foodname =""
         var foodid = ""
         var foodprice = ""
+        var foodrating = 0.0f
         val query = "SELECT * " +
                 "FROM ${DatabaseContracts.FoodEntry.TABLE_NAME} WHERE rowid=${foodID.toInt()};"
              //   "FROM ${DatabaseContracts.FoodEntry.TABLE_NAME} WHERE rowid=" + foodID + ";"
@@ -165,15 +167,24 @@ class DatabaseHelper (context: Context) : SQLiteOpenHelper(context,
             val name = cursor.getString(cursor.getColumnIndex(DatabaseContracts.FoodEntry.COLUMN_NAME_FOOD_NAME))
             val id = cursor.getLong(0)
             val price = cursor.getString(cursor.getColumnIndex(DatabaseContracts.FoodEntry.COLUMN_NAME_BASE_AMOUNT))
+            val rating = cursor.getFloat(cursor.getColumnIndex(DatabaseContracts.FoodEntry.COLUMN_NAME_HEALTHYNESS_RATING))
 
-            foodName = name
+            foodname = name
             foodid = id.toString()
             foodprice = price
+            foodrating = rating
         }else{
-            foodName =  "unknown"
+            foodname =  "unknown"
         }
         cursor.close()
-        return Triple(foodName, foodid, foodprice)
+
+        val dataSet = JSONObject()
+        dataSet.put("food_name", foodname)
+        dataSet.put("food_id", foodid)
+        dataSet.put("food_price", foodprice)
+        dataSet.put("food_rating", foodrating)
+
+        return dataSet
     }
 
     /**

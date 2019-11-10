@@ -16,6 +16,7 @@ import com.example.rojak.database.DatabaseHelper
 import android.content.Intent
 import android.widget.Button
 import android.widget.Toast
+import org.json.JSONObject
 import java.math.RoundingMode
 import java.text.DecimalFormat
 
@@ -69,15 +70,26 @@ class QRActivity : AppCompatActivity() {
                     val code = barcodes?.valueAt(0)?.displayValue
 
 
-                    val rating = DatabaseHelper(this@QRActivity).getAvgWeeklyRating()
-                    val inflation = 1 + rating - 0.5
+                    val rating : Float = DatabaseHelper(this@QRActivity).getAvgWeeklyRating()
+                    val inflation : Float = 1 + rating - 0.5f
 
 
-                    val triple = DatabaseHelper(this@QRActivity).queryFood(code.toString())
-                    val name = triple.first
-                    val price = triple.third
+                    val foodData : JSONObject = DatabaseHelper(this@QRActivity).queryFood(code.toString())
+                    val name = foodData.get("food_name") as String
+                    val price = foodData.get("food_price") as String
+                    val food_rating = foodData.get("food_rating") as Float
 
-                    val new_price = inflation*(price.toFloat())
+                    var new_price : Float
+
+                    if (rating < 0.5) {
+                        new_price = price.toFloat()
+                    } else {
+                        if (food_rating < 0.5) {
+                            new_price = (1 - (rating - 0.5f)) * price.toFloat()
+                        } else {
+                            new_price = inflation * price.toFloat()
+                        }
+                    }
 
                     val df = DecimalFormat("#.##")
                     df.roundingMode = RoundingMode.CEILING
