@@ -1,9 +1,7 @@
 package com.example.rojak.activities.qr
 
-import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Vibrator
 import android.util.Log
 import android.view.SurfaceHolder
 import android.view.SurfaceView
@@ -13,16 +11,10 @@ import com.google.android.gms.vision.CameraSource
 import com.google.android.gms.vision.Detector
 import com.google.android.gms.vision.barcode.Barcode
 import com.google.android.gms.vision.barcode.BarcodeDetector
-import org.json.JSONArray
 import java.io.IOException
-import java.net.URL
 import com.example.rojak.database.DatabaseHelper
-import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
-import android.view.Gravity
 import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
 import java.math.RoundingMode
 import java.text.DecimalFormat
@@ -43,6 +35,7 @@ class QRActivity : AppCompatActivity() {
 
         val cameraSource = CameraSource.Builder(this, barcodeDetector)
             .setRequestedPreviewSize(640, 480)
+            .setAutoFocusEnabled(true)
             .build()
 
         cameraView.holder.addCallback(object : SurfaceHolder.Callback{

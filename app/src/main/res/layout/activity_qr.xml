@@ -8,6 +8,14 @@
     android:layout_height="match_parent"
     tools:context=".activities.qr.QRActivity">
 
+    <fragment
+        android:id="@+id/fragment3"
+        android:name="com.example.rojak.TitleFragment"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        />
+
     <SurfaceView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -15,10 +23,12 @@
         android:id="@+id/sv_CameraView"/>
 
     <TextView
-        android:text="TextView"
+        android:text="Scanning QR...."
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:id="@+id/tv_QRDecoded"
+        android:textSize="20sp"
+        android:gravity="center"
         android:layout_weight="2"/>
 
     <LinearLayout
