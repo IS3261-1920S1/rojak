@@ -53,14 +53,33 @@
         android:layout_weight="15"
         android:background="#EE7631">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:textAlignment="center"
-        android:gravity="center"
-        android:layout_weight="1"
-        android:text="Placeholder for pie chart"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:text="My Healtiness Score"/>
+
+        <SeekBar
+            android:layout_width="match_parent"
+            android:progressDrawable="@drawable/rating_seekbar_progress"
+            android:thumb="@drawable/rating_seekbar_thumb"
+            android:enabled="false"
+            android:progress="7"
+            android:layout_height="0dp"
+            android:layout_weight="3"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:text="Perhaps you could ..."/>
+
+
 
 
     </LinearLayout>
