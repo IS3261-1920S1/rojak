@@ -55,9 +55,14 @@ class HomeActivity : AppCompatActivity() {
         seeker.progress = (rating * 100).toInt()
         var suggest = ""
         if(rating > 0.70){
-            suggest = "eat more healthy food!"
+            suggest = "Your Healthiness Rating is reaching Highly Un-Healthy Levels!\n" +
+                    "Please consider eating more...\n" +
+                    "- Fruits\n" +
+                    "- Vegetables\n" +
+                    "- Healthier Food Options (Such as salads etc..)"
         }else if(rating > 0.4){
-            suggest = "watch out for junk food"
+            suggest = "Your Healthiness Rating is in the Moderate Region\n" +
+                    "Please watch your eating habits such that you do not reach the unhealthy Region."
         }else{
             suggest = "Keep up the healthy eating :)"
         }

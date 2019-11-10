@@ -1,6 +1,7 @@
 package com.example.rojak.activities.wallet
 
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +18,14 @@ class WalletTransactionAdapter(private val context : Context,
     override fun getView(p0: Int, p1: View?, p2: ViewGroup?): View {
         val rowView = inflater.inflate(R.layout.listview_wallet_transaction_row, p2, false)
         val rowItem = this.getItem(p0) as Pair<String, String>
-        rowView.findViewById<TextView>(R.id.walletTransaction_transactionAmount).text = rowItem.first
+        val transactionAmountText = rowView.findViewById<TextView>(R.id.walletTransaction_transactionAmount)
+        transactionAmountText.text = rowItem.first
+        if (rowItem.first[0] == '-') {
+            transactionAmountText.setTextColor(Color.parseColor("#0acd5b"))
+
+        } else {
+            transactionAmountText.setTextColor(Color.parseColor("#cd200a"))
+        }
         rowView.findViewById<TextView>(R.id.walletTransaction_transactionDesc).text = rowItem.second
 
         return rowView
