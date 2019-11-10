@@ -21,13 +21,6 @@ class WalletActivity : AppCompatActivity() {
             dataSource.add(Pair(it.getHistoryTitle(), it.getHistoryDescription()))
         }
 
-        dataSource.add(Pair("Testing Amount", "Testing Description"))
-        dataSource.add(Pair("Testing Amount", "Testing Description"))
-        dataSource.add(Pair("Testing Amount", "Testing Description"))
-        dataSource.add(Pair("Testing Amount", "Testing Description"))
-        dataSource.add(Pair("Testing Amount", "Testing Description"))
-        dataSource.add(Pair("Testing Amount", "Testing Description"))
-        dataSource.add(Pair("Testing Amount", "Testing Description"))
         findViewById<ListView>(R.id.walletTransactions).adapter = WalletTransactionAdapter(this, dataSource)
         findViewById<Button>(R.id.walletActivity_button_topup).setOnClickListener {
             TopUpDialog().show(supportFragmentManager, "")
