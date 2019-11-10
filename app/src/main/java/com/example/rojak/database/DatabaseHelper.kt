@@ -15,7 +15,7 @@ class DatabaseHelper (context: Context) : SQLiteOpenHelper(context,
 
     companion object {
         // If you change the database schema, you must increment the database version.
-        const val DATABASE_VERSION = 13
+        const val DATABASE_VERSION = 15
         const val DATABASE_NAME = "Rojak.db"
 
         /**
@@ -158,11 +158,10 @@ class DatabaseHelper (context: Context) : SQLiteOpenHelper(context,
         var foodid = ""
         var foodprice = ""
         val query = "SELECT * " +
-                "FROM ${DatabaseContracts.FoodEntry.TABLE_NAME} WHERE rowid=1;"
+                "FROM ${DatabaseContracts.FoodEntry.TABLE_NAME} WHERE rowid=${foodID.toInt()};"
              //   "FROM ${DatabaseContracts.FoodEntry.TABLE_NAME} WHERE rowid=" + foodID + ";"
         val cursor = this.readableDatabase.rawQuery(query, null)
         if (cursor.moveToLast()) {
-            println(cursor)
             val name = cursor.getString(cursor.getColumnIndex(DatabaseContracts.FoodEntry.COLUMN_NAME_FOOD_NAME))
             val id = cursor.getLong(0)
             val price = cursor.getString(cursor.getColumnIndex(DatabaseContracts.FoodEntry.COLUMN_NAME_BASE_AMOUNT))
@@ -198,6 +197,28 @@ class DatabaseHelper (context: Context) : SQLiteOpenHelper(context,
         topUpValues.put(DatabaseContracts.FoodTransactionEntry.COLUMN_NAME_FOOD_ID, foodID)
         topUpValues.put(DatabaseContracts.FoodTransactionEntry.COLUMN_NAME_AMOUNT_PAID, price)
         db.insert(DatabaseContracts.FoodTransactionEntry.TABLE_NAME, null, topUpValues)
+    }
+
+    fun getAvgWeeklyRating() : Float {
+        var rating = -1f
+        val query = "SELECT avg(rating) FROM ${DatabaseContracts.FoodTransactionEntry.TABLE_NAME} INNER JOIN ${DatabaseContracts.WalletTransactionEntry.TABLE_NAME} " +
+                   "ON ${DatabaseContracts.FoodTransactionEntry.TABLE_NAME}.${DatabaseContracts.FoodTransactionEntry.COLUMN_NAME_TRANSACTION_ID} = ${DatabaseContracts.WalletTransactionEntry.TABLE_NAME}.${DatabaseContracts.ROWID} " +
+                  "INNER JOIN ${DatabaseContracts.FoodEntry.TABLE_NAME} " +
+                    "ON ${DatabaseContracts.FoodTransactionEntry.TABLE_NAME}.${DatabaseContracts.FoodTransactionEntry.COLUMN_NAME_FOOD_ID} = ${DatabaseContracts.FoodEntry.TABLE_NAME}.${DatabaseContracts.ROWID} Limit 5;"
+
+        println(query)
+        val cursor = this.readableDatabase.rawQuery(query, null)
+        if (cursor.moveToLast()) {
+            println("count")
+            println(cursor.columnCount)
+
+            println("avg(${DatabaseContracts.FoodEntry.COLUMN_NAME_HEALTHYNESS_RATING})")
+            println(cursor.getColumnIndex("AVG(${DatabaseContracts.FoodEntry.COLUMN_NAME_HEALTHYNESS_RATING})"))
+            println(cursor.getFloat(cursor.getColumnIndex("avg(${DatabaseContracts.FoodEntry.COLUMN_NAME_HEALTHYNESS_RATING})")))
+            rating = cursor.getFloat(cursor.getColumnIndex("avg(${DatabaseContracts.FoodEntry.COLUMN_NAME_HEALTHYNESS_RATING})"))
+        }
+        cursor.close()
+        return rating
     }
 
 
@@ -248,7 +269,7 @@ class DatabaseHelper (context: Context) : SQLiteOpenHelper(context,
             while (it.moveToNext()) {
                 transactions.add(
                     FoodTransaction(
-                        it.getInt(it.getColumnIndex(DatabaseContracts.ROWID)),
+                        it.getInt(it.getColumnIndex(DatabaseContracts.FoodTransactionEntry.COLUMN_NAME_TRANSACTION_ID)),
                         it.getFloat(it.getColumnIndex(DatabaseContracts.WalletTransactionEntry.COLUMN_NAME_CURRENT_WALLET_AMOUNT)),
                         it.getString(it.getColumnIndex(DatabaseContracts.WalletTransactionEntry.COLUMN_NAME_TRANSACTION_TIMESTAMP)),
                         it.getString(it.getColumnIndex(DatabaseContracts.FoodEntry.COLUMN_NAME_FOOD_NAME)),

@@ -24,6 +24,8 @@ import android.view.Gravity
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import java.math.RoundingMode
+import java.text.DecimalFormat
 
 
 class QRActivity : AppCompatActivity() {
@@ -71,39 +73,39 @@ class QRActivity : AppCompatActivity() {
                 val barcodes = detections?.detectedItems
 
                 if (barcodes?.size() != 0) {
-                //    val url = barcodes?.valueAt(0)?.displayValue
                     val code = barcodes?.valueAt(0)?.displayValue
 
+
+                    val rating = DatabaseHelper(this@QRActivity).getAvgWeeklyRating()
+                    val inflation = 1 + rating - 0.5
 
 
                     val triple = DatabaseHelper(this@QRActivity).queryFood(code.toString())
                     val name = triple.first
-                    val id = triple.second
                     val price = triple.third
 
-                    val output = "Food Item: " + name  + "Price: " + price
+                    val new_price = inflation*(price.toFloat())
+
+                    val df = DecimalFormat("#.##")
+                    df.roundingMode = RoundingMode.CEILING
+                    val rounded_price = df.format(new_price)
+
+
+                    val output = "Food Item: " + name  + "Price: " + rounded_price
                     tvCodeInfo.text = output
                //     barcodeDetector.release()
 
-
                     findViewById<Button>(R.id.confirmPurchase).setOnClickListener {
-                        println("confirm")
-
-
-
                         val bal = DatabaseHelper(this@QRActivity).getCurrentWalletAmount()
                         if(price.toFloat() > bal){
                             val myToast = Toast.makeText(applicationContext,"Balance not enough. Balance: " + bal.toString(),Toast.LENGTH_SHORT)
                             myToast.show()
                         }else{
-
-                            DatabaseHelper(this@QRActivity).addPurchase(price.toFloat(), id.toInt())
+                            DatabaseHelper(this@QRActivity).addPurchase(rounded_price.toFloat(), code!!.toInt())
 
                             val myToast = Toast.makeText(applicationContext,"Purchase Success",Toast.LENGTH_SHORT)
                             myToast.show()
                         }
-
-
                     }
 
                     findViewById<Button>(R.id.cancelPurchase).setOnClickListener {
