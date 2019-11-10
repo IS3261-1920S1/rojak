@@ -16,7 +16,7 @@ class DatabaseHelper (context: Context) : SQLiteOpenHelper(context,
 
     companion object {
         // If you change the database schema, you must increment the database version.
-        const val DATABASE_VERSION = 17
+        const val DATABASE_VERSION = 19
         const val DATABASE_NAME = "Rojak.db"
 
         /**
