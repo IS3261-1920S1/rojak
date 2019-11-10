@@ -16,7 +16,7 @@ class WalletActivity : AppCompatActivity() {
         setContentView(R.layout.activity_wallet)
 
         val dbHelper : DatabaseHelper = DatabaseHelper(this)
-        findViewById<TextView>(R.id.currentWalletAmount).text = dbHelper.getCurrentWalletAmount().toString()
+        findViewById<TextView>(R.id.currentWalletAmount).text = "$" + dbHelper.getCurrentWalletAmount().toString()
         val dataSource = ArrayList<Pair<String, String>>()
         val transactions = dbHelper.getAllWalletTransactions()
         val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
