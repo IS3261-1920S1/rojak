@@ -16,7 +16,7 @@
             android:layout_height="match_parent"
             android:text="Rojak"
             android:textSize="55sp"
-            android:fontFamily="@font/madame_font"
+            android:fontFamily="@font/font_madame"
             android:textAlignment="center"
             android:gravity="center"/>
 
