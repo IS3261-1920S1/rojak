@@ -103,10 +103,11 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:textSize="24sp"
+            android:textSize="47sp"
             android:textAlignment="center"
+            android:fontFamily="@font/font_wardness"
             android:gravity="center"
-            android:text="Perhaps you could ..."/>
+            android:text="Our Advice..."/>
 
         <TextView
             android:id="@+id/suggest"
